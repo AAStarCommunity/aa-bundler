@@ -3,6 +3,7 @@ package gas
 import (
 	"bytes"
 	"context"
+	"github.com/stackup-wallet/stackup-bundler/internal/config"
 	"math"
 	"math/big"
 
@@ -35,7 +36,7 @@ func calcPVGFuncNoop() CalcPreVerificationGasFunc {
 // https://medium.com/offchainlabs/understanding-arbitrum-2-dimensional-fees-fd1d582596c9.
 func CalcArbitrumPVGWithEthClient(
 	rpc *rpc.Client,
-	entryPoint common.Address,
+	entryPoint config.AddressWithVersion,
 ) CalcPreVerificationGasFunc {
 	pk, _ := crypto.GenerateKey()
 	dummy, _ := signer.New(hexutil.Encode(crypto.FromECDSA(pk))[2:])
@@ -68,7 +69,7 @@ func CalcArbitrumPVGWithEthClient(
 			create = true
 		}
 		ge, err := nodeinterface.GasEstimateL1ComponentMethod.Inputs.Pack(
-			entryPoint,
+			entryPoint.Address,
 			create,
 			append(methods.HandleOpsMethod.ID, ho...),
 		)

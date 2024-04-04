@@ -85,9 +85,9 @@ type UserOpHandlerCtx struct {
 	pendingSenderOps    []*userop.UserOperation
 	pendingFactoryOps   []*userop.UserOperation
 	pendingPaymasterOps []*userop.UserOperation
-	senderDeposit       *entrypoint.IStakeManagerDepositInfo
-	factoryDeposit      *entrypoint.IStakeManagerDepositInfo
-	paymasterDeposit    *entrypoint.IStakeManagerDepositInfo
+	senderDeposit       *entrypoint.Entrypoint
+	factoryDeposit      *entrypoint.Entrypoint
+	paymasterDeposit    *entrypoint.Entrypoint
 }
 
 // NewUserOpHandlerContext creates a new UserOpHandlerCtx using a given op.
@@ -140,17 +140,17 @@ func NewUserOpHandlerContext(
 }
 
 // GetSenderDepositInfo returns the current EntryPoint deposit for the sender.
-func (c *UserOpHandlerCtx) GetSenderDepositInfo() *entrypoint.IStakeManagerDepositInfo {
+func (c *UserOpHandlerCtx) GetSenderDepositInfo() *entrypoint.Entrypoint {
 	return c.senderDeposit
 }
 
 // GetFactoryDepositInfo returns the current EntryPoint deposit for the factory.
-func (c *UserOpHandlerCtx) GetFactoryDepositInfo() *entrypoint.IStakeManagerDepositInfo {
+func (c *UserOpHandlerCtx) GetFactoryDepositInfo() *entrypoint.Entrypoint {
 	return c.factoryDeposit
 }
 
 // GetPaymasterDepositInfo returns the current EntryPoint deposit for the paymaster.
-func (c *UserOpHandlerCtx) GetPaymasterDepositInfo() *entrypoint.IStakeManagerDepositInfo {
+func (c *UserOpHandlerCtx) GetPaymasterDepositInfo() *entrypoint.Entrypoint {
 	return c.paymasterDeposit
 }
 

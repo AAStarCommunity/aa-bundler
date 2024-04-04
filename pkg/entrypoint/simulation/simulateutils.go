@@ -7,7 +7,7 @@ import (
 )
 
 // EntityStakes provides a mapping for encountered entity addresses and their stake info on the EntryPoint.
-type EntityStakes map[common.Address]*entrypoint.IStakeManagerDepositInfo
+type EntityStakes map[common.Address]*entrypoint.Entrypoint
 
 var (
 	// Only one create2 opcode is allowed if these two conditions are met:

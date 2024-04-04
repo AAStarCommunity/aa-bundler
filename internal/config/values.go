@@ -13,13 +13,18 @@ import (
 	"github.com/stackup-wallet/stackup-bundler/pkg/signer"
 )
 
+type AddressWithVersion struct {
+	Address common.Address
+	Version string
+}
+
 type Values struct {
 	// Documented variables.
 	PrivateKey                   string
 	EthClientUrl                 string
 	Port                         int
 	DataDirectory                string
-	SupportedEntryPoints         []common.Address
+	SupportedEntryPoints         []AddressWithVersion
 	MaxVerificationGas           *big.Int
 	MaxBatchGasLimit             *big.Int
 	MaxOpTTL                     time.Duration
@@ -69,6 +74,18 @@ func envArrayToAddressSlice(s string) []common.Address {
 	slc := []common.Address{}
 	for _, ep := range env {
 		slc = append(slc, common.HexToAddress(strings.TrimSpace(ep)))
+	}
+
+	return slc
+}
+
+// envArrayToAddressSliceWithVersion get the addr with version like "0.6:0xFFFFF,0.7:0xFFFFE"
+func envArrayToAddressSliceWithVersion(s string) map[common.Address]string {
+	env := strings.Split(s, ",")
+	slc := make(map[common.Address]string)
+	for _, ep := range env {
+		ver := strings.Split(ep, ":")
+		slc[common.HexToAddress(strings.TrimSpace(ver[1]))] = ver[0]
 	}
 
 	return slc
@@ -183,7 +200,9 @@ func GetValues() *Values {
 	ethClientUrl := viper.GetString("erc4337_bundler_eth_client_url")
 	port := viper.GetInt("erc4337_bundler_port")
 	dataDirectory := viper.GetString("erc4337_bundler_data_directory")
+	// obsolete, assume the entrypoint is ver 0.6 from this values
 	supportedEntryPoints := envArrayToAddressSlice(viper.GetString("erc4337_bundler_supported_entry_points"))
+	supportedEntryPointsWithVersion := envArrayToAddressSliceWithVersion(viper.GetString("erc4337_bundler_supported_entry_points_with_version"))
 	beneficiary := viper.GetString("erc4337_bundler_beneficiary")
 	nativeBundlerCollectorTracer := viper.GetString("erc4337_bundler_native_bundler_collector_tracer")
 	nativeBundlerExecutorTracer := viper.GetString("erc4337_bundler_native_bundler_executor_tracer")
@@ -204,11 +223,26 @@ func GetValues() *Values {
 	debugMode := viper.GetBool("erc4337_bundler_debug_mode")
 	ginMode := viper.GetString("erc4337_bundler_gin_mode")
 	return &Values{
-		PrivateKey:                   privateKey,
-		EthClientUrl:                 ethClientUrl,
-		Port:                         port,
-		DataDirectory:                dataDirectory,
-		SupportedEntryPoints:         supportedEntryPoints,
+		PrivateKey:    privateKey,
+		EthClientUrl:  ethClientUrl,
+		Port:          port,
+		DataDirectory: dataDirectory,
+		SupportedEntryPoints: func() []AddressWithVersion {
+			addr := make([]AddressWithVersion, 0, len(supportedEntryPoints)+len(supportedEntryPointsWithVersion))
+			for _, address := range supportedEntryPoints {
+				addr = append(addr, AddressWithVersion{
+					Address: address,
+					Version: "0.6",
+				})
+			}
+			for address, version := range supportedEntryPointsWithVersion {
+				addr = append(addr, AddressWithVersion{
+					Address: address,
+					Version: version,
+				})
+			}
+			return addr
+		}(),
 		Beneficiary:                  beneficiary,
 		NativeBundlerCollectorTracer: nativeBundlerCollectorTracer,
 		NativeBundlerExecutorTracer:  nativeBundlerExecutorTracer,

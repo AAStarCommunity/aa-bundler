@@ -3,13 +3,13 @@ package transaction
 import (
 	"context"
 	"errors"
+	"github.com/stackup-wallet/stackup-bundler/internal/config"
 	"math"
 	"math/big"
 	"time"
 
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/stackup-wallet/stackup-bundler/pkg/entrypoint"
@@ -27,9 +27,9 @@ type Opts struct {
 	ChainID *big.Int
 
 	// Options for the EntryPoint
-	EntryPoint  common.Address
+	EntryPoint  config.AddressWithVersion
 	Batch       []*userop.UserOperation
-	Beneficiary common.Address
+	Beneficiary config.AddressWithVersion
 
 	// Options for the EOA transaction
 	BaseFee     *big.Int

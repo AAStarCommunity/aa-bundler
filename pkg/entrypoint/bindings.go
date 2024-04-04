@@ -48,6 +48,13 @@ func NewStakeManagerByVersion(version string) Entrypoint {
 	return nil
 }
 
+func (e *BundlerClient) NewStakeManager() Entrypoint {
+	if factory, ok := StakeManagerDepositInfoFactories[e.ver]; ok {
+		return factory()
+	}
+	return nil
+}
+
 type Entrypoint interface {
 	Unknown
 }

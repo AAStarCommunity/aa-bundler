@@ -187,6 +187,7 @@ func (op *UserOperation) PackForSignature() []byte {
 
 // GetUserOpHash returns the hash of the userOp + entryPoint address + chainID.
 func (op *UserOperation) GetUserOpHash(entryPoint common.Address, chainID *big.Int) common.Hash {
+	// TODO: 是否需要适配不同的版本
 	return crypto.Keccak256Hash(
 		crypto.Keccak256(op.PackForSignature()),
 		common.LeftPadBytes(entryPoint.Bytes(), 32),

@@ -102,7 +102,7 @@ func CalcArbitrumPVGWithEthClient(
 func CalcOptimismPVGWithEthClient(
 	rpc *rpc.Client,
 	chainID *big.Int,
-	entryPoint common.Address,
+	entryPoint config.AddressWithVersion,
 ) CalcPreVerificationGasFunc {
 	pk, _ := crypto.GenerateKey()
 	dummy, _ := signer.New(hexutil.Encode(crypto.FromECDSA(pk))[2:])

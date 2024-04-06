@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"github.com/stackup-wallet/stackup-bundler/internal/config"
-	entrypointV06 "github.com/stackup-wallet/stackup-bundler/pkg/entrypoint/bindings/v06"
 	useropV06 "github.com/stackup-wallet/stackup-bundler/pkg/userop/v06"
 	useropV07 "github.com/stackup-wallet/stackup-bundler/pkg/userop/v07"
 	"math"
@@ -43,12 +42,13 @@ func getPaymasterAndData(op userop.UserOp) []byte {
 	return nil
 }
 
+// TODO: 返回的应该是binding的UserOperation对象
 func getEntrypointUserOpSlice(tmp userop.UserOp) []interface{} {
 	if opV06, ok := tmp.(*useropV06.UserOperation); ok {
-		return []interface{}{entrypointV06.UserOperation(*opV06)}
+		return []interface{}{opV06}
 	}
 	if opV07, ok := tmp.(*useropV07.PackedUserOperation); ok {
-		return []interface{}{entrypointV06.UserOperation(*opV07)}
+		return []interface{}{opV07}
 	}
 	return nil
 }

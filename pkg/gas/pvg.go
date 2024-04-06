@@ -72,7 +72,7 @@ func CalcArbitrumPVGWithEthClient(
 		}
 
 		data["paymasterAndData"] = hexutil.Encode(bytes.Repeat([]byte{1}, len(getPaymasterAndData(op))))
-		tmp, err := userop.New(data) // TODO: 是否不区分v06和v07
+		tmp, err := userop.New(data)
 		if err != nil {
 			return nil, err
 		}
@@ -88,7 +88,7 @@ func CalcArbitrumPVGWithEthClient(
 
 		// Encode function data for gasEstimateL1Component
 		create := false
-		if tmp.Nonce.Cmp(common.Big0) == 0 {
+		if tmp.GetNonce().Cmp(common.Big0) == 0 {
 			create = true
 		}
 		ge, err := nodeinterface.GasEstimateL1ComponentMethod.Inputs.Pack(
@@ -129,7 +129,7 @@ func CalcOptimismPVGWithEthClient(
 ) CalcPreVerificationGasFunc {
 	pk, _ := crypto.GenerateKey()
 	dummy, _ := signer.New(hexutil.Encode(crypto.FromECDSA(pk))[2:])
-	return func(op *userop.UserOp, static *big.Int) (*big.Int, error) {
+	return func(op userop.UserOp, static *big.Int) (*big.Int, error) {
 		// Create Raw HandleOps Transaction
 		eth := ethclient.NewClient(rpc)
 		head, err := eth.HeaderByNumber(context.Background(), nil)

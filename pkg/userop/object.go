@@ -18,6 +18,7 @@ type UserOp interface {
 	GetUserOpHash(entryPoint common.Address, chainID *big.Int) common.Hash
 	MarshalJSON() ([]byte, error)
 	ToMap() (map[string]any, error)
+	GetNonce() *big.Int
 }
 
 type BasisUserOperation struct {
@@ -27,6 +28,10 @@ type BasisUserOperation struct {
 	CallData         []byte         `json:"callData"             mapstructure:"callData"             validate:"required"`
 	PaymasterAndData []byte         `json:"paymasterAndData"     mapstructure:"paymasterAndData"     validate:"required"`
 	Signature        []byte         `json:"signature"            mapstructure:"signature"            validate:"required"`
+}
+
+func (op *BasisUserOperation) GetNonce() *big.Int {
+	return op.Nonce
 }
 
 // GetPaymaster returns the address portion of PaymasterAndData if applicable. Otherwise, it returns the zero

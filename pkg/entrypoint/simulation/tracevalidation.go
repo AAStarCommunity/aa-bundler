@@ -25,7 +25,7 @@ import (
 type TraceInput struct {
 	Rpc                *rpc.Client
 	EntryPoint         common.Address
-	Op                 *userop.UserOperation
+	Op                 *userop.UserOp
 	ChainID            *big.Int
 	IsRIP7212Supported bool
 	Tracer             string
@@ -39,7 +39,7 @@ type TraceOutput struct {
 }
 
 // TraceSimulateValidation makes a debug_traceCall to Entrypoint.simulateValidation(userop) and returns
-// information related to the validation phase of a UserOperation.
+// information related to the validation phase of a UserOp.
 func TraceSimulateValidation(in *TraceInput) (*TraceOutput, error) {
 	ep, err := entrypoint.NewEntrypoint(in.EntryPoint, ethclient.NewClient(in.Rpc))
 	if err != nil {

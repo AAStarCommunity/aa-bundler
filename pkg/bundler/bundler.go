@@ -1,4 +1,4 @@
-// Package bundler provides the mediator for processing outgoing UserOperation batches to the EntryPoint.
+// Package bundler provides the mediator for processing outgoing UserOp batches to the EntryPoint.
 package bundler
 
 import (
@@ -162,7 +162,7 @@ func (i *Bundler) Process(ep common.Address) (*modules.BatchHandlerCtx, error) {
 	}
 
 	// Remove userOps that remain in the context from mempool.
-	rmOps := append([]*userop.UserOperation{}, ctx.Batch...)
+	rmOps := append([]*userop.UserOp{}, ctx.Batch...)
 	dh := []string{}
 	dr := []string{}
 	for _, item := range ctx.PendingRemoval {

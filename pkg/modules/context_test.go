@@ -68,7 +68,7 @@ func TestGetPendingSenderOps(t *testing.T) {
 		t.Fatalf("init failed: %v", err)
 	}
 
-	expectedPenOps := []*userop.UserOperation{penOp3, penOp2, penOp1}
+	expectedPenOps := []*userop.UserOp{penOp3, penOp2, penOp1}
 	penOps := ctx.GetPendingSenderOps()
 	if len(penOps) != len(expectedPenOps) {
 		t.Fatalf("got length %d, want %d", len(penOps), len(expectedPenOps))
@@ -115,7 +115,7 @@ func TestGetPendingFactoryOps(t *testing.T) {
 		t.Fatalf("init failed: %v", err)
 	}
 
-	expectedPenOps := []*userop.UserOperation{penOp3, penOp2, penOp1}
+	expectedPenOps := []*userop.UserOp{penOp3, penOp2, penOp1}
 	penOps := ctx.GetPendingFactoryOps()
 	if len(penOps) != len(expectedPenOps) {
 		t.Fatalf("got length %d, want %d", len(penOps), len(expectedPenOps))
@@ -162,7 +162,7 @@ func TestGetPendingPaymasterOps(t *testing.T) {
 		t.Fatalf("init failed: %v", err)
 	}
 
-	expectedPenOps := []*userop.UserOperation{penOp3, penOp2, penOp1}
+	expectedPenOps := []*userop.UserOp{penOp3, penOp2, penOp1}
 	penOps := ctx.GetPendingPaymasterOps()
 	if len(penOps) != len(expectedPenOps) {
 		t.Fatalf("got length %d, want %d", len(penOps), len(expectedPenOps))

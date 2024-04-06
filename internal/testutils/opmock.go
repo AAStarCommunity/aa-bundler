@@ -1,6 +1,7 @@
 package testutils
 
 import (
+	useropV06 "github.com/stackup-wallet/stackup-bundler/pkg/userop/v06"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -25,13 +26,13 @@ var (
 	MockByteCode = common.Hex2Bytes("6080604052")
 )
 
-// Returns a valid initial userOperation for an EIP-4337 account.
-func MockValidInitUserOp() *userop.UserOperation {
+// MockValidInitUserOp Returns a valid initial userOperation for an EIP-4337 account.
+func MockValidInitUserOp() *useropV06.UserOperation {
 	op, _ := userop.New(MockUserOpData)
 	return op
 }
 
-func IsOpsEqual(op1 *userop.UserOperation, op2 *userop.UserOperation) bool {
+func IsOpsEqual(op1 *userop.UserOp, op2 *userop.UserOp) bool {
 	return cmp.Equal(
 		op1,
 		op2,
@@ -39,7 +40,7 @@ func IsOpsEqual(op1 *userop.UserOperation, op2 *userop.UserOperation) bool {
 	)
 }
 
-func GetOpsDiff(op1 *userop.UserOperation, op2 *userop.UserOperation) string {
+func GetOpsDiff(op1 *userop.UserOp, op2 *userop.UserOp) string {
 	return cmp.Diff(
 		op1,
 		op2,

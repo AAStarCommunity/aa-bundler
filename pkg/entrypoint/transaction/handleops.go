@@ -28,7 +28,7 @@ type Opts struct {
 
 	// Options for the EntryPoint
 	EntryPoint  config.AddressWithVersion
-	Batch       []*userop.UserOperation
+	Batch       []*userop.UserOp
 	Beneficiary config.AddressWithVersion
 
 	// Options for the EOA transaction
@@ -40,7 +40,7 @@ type Opts struct {
 	WaitTimeout time.Duration
 }
 
-func toAbiType(batch []*userop.UserOperation) []entrypoint.UserOperation {
+func toAbiType(batch []*userop.UserOp) []entrypoint.UserOperation {
 	ops := []entrypoint.UserOperation{}
 	for _, op := range batch {
 		ops = append(ops, entrypoint.UserOperation(*op))

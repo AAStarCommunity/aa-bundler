@@ -23,7 +23,7 @@ func TestDropExpired(t *testing.T) {
 	}
 
 	ctx := modules.NewBatchHandlerContext(
-		[]*userop.UserOperation{op1, op2},
+		[]*userop.UserOp{op1, op2},
 		testutils.ValidAddress1,
 		testutils.ChainID,
 		nil,

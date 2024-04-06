@@ -103,7 +103,7 @@ func (s *Standalone) SimulateOp() modules.UserOpHandlerFunc {
 			if sim.ReturnInfo.SigFailed {
 				return errors.NewRPCError(
 					errors.INVALID_SIGNATURE,
-					"Invalid UserOp signature or paymaster signature",
+					"Invalid BasisUserOperation signature or paymaster signature",
 					nil,
 				)
 			}
@@ -219,7 +219,7 @@ func (s *Standalone) SimulateBatch() modules.BatchHandlerFunc {
 // the last modules executed by the Bundler.
 func (s *Standalone) Clean() modules.BatchHandlerFunc {
 	return func(ctx *modules.BatchHandlerCtx) error {
-		all := append([]*userop.UserOperation{}, ctx.Batch...)
+		all := append([]*userop.UserOp{}, ctx.Batch...)
 		for _, item := range ctx.PendingRemoval {
 			all = append(all, item.Op)
 		}

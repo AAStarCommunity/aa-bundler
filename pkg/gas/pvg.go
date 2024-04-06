@@ -4,6 +4,9 @@ import (
 	"bytes"
 	"context"
 	"github.com/stackup-wallet/stackup-bundler/internal/config"
+	entrypointV06 "github.com/stackup-wallet/stackup-bundler/pkg/entrypoint/bindings/v06"
+	useropV06 "github.com/stackup-wallet/stackup-bundler/pkg/userop/v06"
+	useropV07 "github.com/stackup-wallet/stackup-bundler/pkg/userop/v07"
 	"math"
 	"math/big"
 
@@ -13,7 +16,6 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/stackup-wallet/stackup-bundler/pkg/arbitrum/nodeinterface"
-	"github.com/stackup-wallet/stackup-bundler/pkg/entrypoint"
 	"github.com/stackup-wallet/stackup-bundler/pkg/entrypoint/methods"
 	"github.com/stackup-wallet/stackup-bundler/pkg/entrypoint/transaction"
 	"github.com/stackup-wallet/stackup-bundler/pkg/optimism/gaspriceoracle"
@@ -23,12 +25,32 @@ import (
 
 // CalcPreVerificationGasFunc defines an interface for a function to calculate PVG given a userOp and a static
 // value. The static input is the value derived from the default overheads.
-type CalcPreVerificationGasFunc = func(op *userop.UserOperation, static *big.Int) (*big.Int, error)
+type CalcPreVerificationGasFunc = func(op userop.UserOp, static *big.Int) (*big.Int, error)
 
 func calcPVGFuncNoop() CalcPreVerificationGasFunc {
-	return func(op *userop.UserOperation, static *big.Int) (*big.Int, error) {
+	return func(op userop.UserOp, static *big.Int) (*big.Int, error) {
 		return nil, nil
 	}
+}
+
+func getPaymasterAndData(op userop.UserOp) []byte {
+	if opV06, ok := op.(*useropV06.UserOperation); ok {
+		return opV06.PaymasterAndData
+	}
+	if opV07, ok := op.(*useropV07.PackedUserOperation); ok {
+		return opV07.PaymasterAndData
+	}
+	return nil
+}
+
+func getEntrypointUserOpSlice(tmp userop.UserOp) []interface{} {
+	if opV06, ok := tmp.(*useropV06.UserOperation); ok {
+		return []interface{}{entrypointV06.UserOperation(*opV06)}
+	}
+	if opV07, ok := tmp.(*useropV07.PackedUserOperation); ok {
+		return []interface{}{entrypointV06.UserOperation(*opV07)}
+	}
+	return nil
 }
 
 // CalcArbitrumPVGWithEthClient uses Arbitrum's NodeInterface precompile to get an estimate for
@@ -40,7 +62,7 @@ func CalcArbitrumPVGWithEthClient(
 ) CalcPreVerificationGasFunc {
 	pk, _ := crypto.GenerateKey()
 	dummy, _ := signer.New(hexutil.Encode(crypto.FromECDSA(pk))[2:])
-	return func(op *userop.UserOperation, static *big.Int) (*big.Int, error) {
+	return func(op userop.UserOp, static *big.Int) (*big.Int, error) {
 		// Sanitize paymasterAndData.
 		// TODO: Figure out why variability in this field is causing Arbitrum's precompile to return different
 		// values.
@@ -48,15 +70,16 @@ func CalcArbitrumPVGWithEthClient(
 		if err != nil {
 			return nil, err
 		}
-		data["paymasterAndData"] = hexutil.Encode(bytes.Repeat([]byte{1}, len(op.PaymasterAndData)))
-		tmp, err := userop.New(data)
+
+		data["paymasterAndData"] = hexutil.Encode(bytes.Repeat([]byte{1}, len(getPaymasterAndData(op))))
+		tmp, err := userop.New(data) // TODO: 是否不区分v06和v07
 		if err != nil {
 			return nil, err
 		}
 
 		// Pack handleOps method inputs
 		ho, err := methods.HandleOpsMethod.Inputs.Pack(
-			[]entrypoint.UserOperation{entrypoint.UserOperation(*tmp)},
+			getEntrypointUserOpSlice(tmp),
 			dummy.Address,
 		)
 		if err != nil {
@@ -106,7 +129,7 @@ func CalcOptimismPVGWithEthClient(
 ) CalcPreVerificationGasFunc {
 	pk, _ := crypto.GenerateKey()
 	dummy, _ := signer.New(hexutil.Encode(crypto.FromECDSA(pk))[2:])
-	return func(op *userop.UserOperation, static *big.Int) (*big.Int, error) {
+	return func(op *userop.UserOp, static *big.Int) (*big.Int, error) {
 		// Create Raw HandleOps Transaction
 		eth := ethclient.NewClient(rpc)
 		head, err := eth.HeaderByNumber(context.Background(), nil)
@@ -118,16 +141,19 @@ func CalcOptimismPVGWithEthClient(
 			return nil, err
 		}
 		tx, err := transaction.HandleOps(&transaction.Opts{
-			EOA:         dummy,
-			Eth:         eth,
-			ChainID:     chainID,
-			EntryPoint:  entryPoint,
-			Batch:       []*userop.UserOperation{op},
-			Beneficiary: dummy.Address,
-			BaseFee:     head.BaseFee,
-			Tip:         tip,
-			GasLimit:    math.MaxUint64,
-			NoSend:      true,
+			EOA:        dummy,
+			Eth:        eth,
+			ChainID:    chainID,
+			EntryPoint: entryPoint,
+			Batch:      []*userop.UserOp{op},
+			Beneficiary: config.AddressWithVersion{
+				Version: entryPoint.Version,
+				Address: dummy.Address,
+			},
+			BaseFee:  head.BaseFee,
+			Tip:      tip,
+			GasLimit: math.MaxUint64,
+			NoSend:   true,
 		})
 		if err != nil {
 			return nil, err

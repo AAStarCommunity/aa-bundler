@@ -17,7 +17,7 @@ var (
 	validate = validator.New()
 	onlyOnce = sync.Once{}
 
-	ErrBadUserOperationData = errors.New("cannot decode UserOperation")
+	ErrBadUserOperationData = errors.New("cannot decode UserOp")
 )
 
 func exactFieldMatch(mapKey, fieldName string) bool {
@@ -87,9 +87,9 @@ func validateBigIntType(field reflect.Value) interface{} {
 	return field
 }
 
-// New decodes a map into a UserOperation object and validates all the fields are correctly typed.
-func New(data map[string]any) (*UserOperation, error) {
-	var op UserOperation
+// New decodes a map into a UserOp object and validates all the fields are correctly typed.
+func New(data map[string]any) (UserOp, error) {
+	var op UserOp
 
 	// Convert map to struct
 	config := &mapstructure.DecoderConfig{
@@ -116,5 +116,5 @@ func New(data map[string]any) (*UserOperation, error) {
 		return nil, err
 	}
 
-	return &op, nil
+	return op, nil
 }

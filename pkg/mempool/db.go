@@ -25,7 +25,7 @@ func getEntryPointFromDBKey(key []byte) common.Address {
 	return common.HexToAddress(slc[1])
 }
 
-func getUserOpFromDBValue(value []byte) (*userop.UserOperation, error) {
+func getUserOpFromDBValue(value []byte) (*userop.UserOp, error) {
 	data := make(map[string]any)
 	if err := json.Unmarshal(value, &data); err != nil {
 		return nil, err

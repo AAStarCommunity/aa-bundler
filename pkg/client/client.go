@@ -166,7 +166,7 @@ func (i *Client) SendUserOperation(op map[string]any, ep string) (string, error)
 }
 
 // EstimateUserOperationGas returns estimates for PreVerificationGas, VerificationGasLimit, and CallGasLimit
-// given a UserOperation, EntryPoint address, and state OverrideSet. The signature field and current gas
+// given a UserOp, EntryPoint address, and state OverrideSet. The signature field and current gas
 // values will not be validated although there should be dummy values in place for the most reliable results
 // (e.g. a signature with the correct length).
 func (i *Client) EstimateUserOperationGas(
@@ -240,7 +240,7 @@ func (i *Client) EstimateUserOperationGas(
 	}, nil
 }
 
-// GetUserOperationReceipt fetches a UserOperation receipt based on a userOpHash returned by
+// GetUserOperationReceipt fetches a UserOp receipt based on a userOpHash returned by
 // *Client.SendUserOperation.
 func (i *Client) GetUserOperationReceipt(
 	hash string,
@@ -258,7 +258,7 @@ func (i *Client) GetUserOperationReceipt(
 	return ev, nil
 }
 
-// GetUserOperationByHash returns a UserOperation based on a given userOpHash returned by
+// GetUserOperationByHash returns a UserOp based on a given userOpHash returned by
 // *Client.SendUserOperation.
 func (i *Client) GetUserOperationByHash(hash string) (*filter.HashLookupResult, error) {
 	// Init logger

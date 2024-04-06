@@ -55,14 +55,14 @@ func GetGasPricesWithEthClient(eth *ethclient.Client) GetGasPricesFunc {
 // callGasLimit given a userOp and EntryPoint address.
 type GetGasEstimateFunc = func(
 	ep common.Address,
-	op *userop.UserOperation,
+	op *userop.UserOp,
 	sos state.OverrideSet,
 ) (verificationGas uint64, callGas uint64, err error)
 
 func getGasEstimateNoop() GetGasEstimateFunc {
 	return func(
 		ep common.Address,
-		op *userop.UserOperation,
+		op *userop.UserOp,
 		sos state.OverrideSet,
 	) (verificationGas uint64, callGas uint64, err error) {
 		return 0, 0, nil
@@ -80,7 +80,7 @@ func GetGasEstimateWithEthClient(
 ) GetGasEstimateFunc {
 	return func(
 		ep common.Address,
-		op *userop.UserOperation,
+		op *userop.UserOp,
 		sos state.OverrideSet,
 	) (verificationGas uint64, callGas uint64, err error) {
 		return gas.EstimateGas(&gas.EstimateInput{
@@ -96,7 +96,7 @@ func GetGasEstimateWithEthClient(
 	}
 }
 
-// GetUserOpByHashFunc is a general interface for fetching a UserOperation given a userOpHash, EntryPoint
+// GetUserOpByHashFunc is a general interface for fetching a UserOp given a userOpHash, EntryPoint
 // address, chain ID, and block range.
 type GetUserOpByHashFunc func(hash string, ep common.Address, chain *big.Int, blkRange uint64) (*filter.HashLookupResult, error)
 
@@ -107,7 +107,7 @@ func getUserOpByHashNoop() GetUserOpByHashFunc {
 }
 
 // GetUserOpByHashWithEthClient returns an implementation of GetUserOpByHashFunc that relies on an eth client
-// to fetch a UserOperation.
+// to fetch a UserOp.
 func GetUserOpByHashWithEthClient(eth *ethclient.Client) GetUserOpByHashFunc {
 	return func(hash string, ep common.Address, chain *big.Int, blkRange uint64) (*filter.HashLookupResult, error) {
 		return filter.GetUserOperationByHash(eth, hash, ep, chain, blkRange)

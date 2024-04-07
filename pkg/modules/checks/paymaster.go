@@ -12,10 +12,10 @@ import (
 // address that
 //
 //  1. currently has nonempty code on chain
-//  2. has a sufficient deposit to pay for the UserOperation
+//  2. has a sufficient deposit to pay for the UserOp
 func ValidatePaymasterAndData(
-	op *userop.UserOperation,
-	dep *entrypoint.IStakeManagerDepositInfo,
+	op *userop.UserOp,
+	dep *entrypoint.Entrypoint,
 	gc GetCodeFunc,
 ) error {
 	if len(op.PaymasterAndData) == 0 {

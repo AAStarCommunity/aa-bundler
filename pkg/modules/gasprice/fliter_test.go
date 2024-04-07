@@ -31,7 +31,7 @@ func TestFilterUnderpricedDynamic(t *testing.T) {
 	op3.MaxPriorityFeePerGas = big.NewInt(1)
 
 	ctx := modules.NewBatchHandlerContext(
-		[]*userop.UserOperation{op1, op2, op3},
+		[]*userop.UserOp{op1, op2, op3},
 		testutils.ValidAddress1,
 		testutils.ChainID,
 		bf,
@@ -67,7 +67,7 @@ func TestFilterUnderpricedGasPrice(t *testing.T) {
 	op3.MaxPriorityFeePerGas = big.NewInt(6)
 
 	ctx := modules.NewBatchHandlerContext(
-		[]*userop.UserOperation{op1, op2, op3},
+		[]*userop.UserOp{op1, op2, op3},
 		testutils.ValidAddress1,
 		testutils.ChainID,
 		nil,

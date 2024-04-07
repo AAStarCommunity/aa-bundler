@@ -67,7 +67,7 @@ func (ov *Overhead) SetPreVerificationGasBufferFactor(factor int64) {
 
 // CalcCallDataCost calculates the additional gas cost required to serialize the userOp when making the
 // transaction to submit the entire batch.
-func (ov *Overhead) CalcCallDataCost(op *userop.UserOperation) float64 {
+func (ov *Overhead) CalcCallDataCost(op *userop.UserOp) float64 {
 	cost := float64(0)
 	for _, b := range op.Pack() {
 		if b == byte(0) {
@@ -80,21 +80,21 @@ func (ov *Overhead) CalcCallDataCost(op *userop.UserOperation) float64 {
 	return cost
 }
 
-// CalcPerUserOpCost calculates the gas overhead from processing a UserOperation's validation and execution
-// phase. This overhead is not constant and is correlated to the number of 32 byte words in the UserOperation.
+// CalcPerUserOpCost calculates the gas overhead from processing a UserOp's validation and execution
+// phase. This overhead is not constant and is correlated to the number of 32 byte words in the UserOp.
 // It can be summarized in the equation perUserOpMultiplier * lenInWord + perUserOpFixed.
 //
 // Note: The constant values have been derived empirically by plotting the relationship between per userOp
 // overhead vs length in words with a sample size of 30.
-func (ov *Overhead) CalcPerUserOpCost(op *userop.UserOperation) float64 {
+func (ov *Overhead) CalcPerUserOpCost(op *userop.UserOp) float64 {
 	opLen := math.Floor(float64(len(op.Pack())+31) / 32)
 	cost := (ov.perUserOpMultiplier * opLen) + ov.perUserOpFixed
 
 	return cost
 }
 
-// CalcPreVerificationGas returns an expected gas cost for processing a UserOperation from a batch.
-func (ov *Overhead) CalcPreVerificationGas(op *userop.UserOperation) (*big.Int, error) {
+// CalcPreVerificationGas returns an expected gas cost for processing a UserOp from a batch.
+func (ov *Overhead) CalcPreVerificationGas(op *userop.UserOp) (*big.Int, error) {
 	// Sanitize fields to reduce as much variability due to length and zero bytes
 	data, err := op.ToMap()
 	if err != nil {
@@ -129,7 +129,7 @@ func (ov *Overhead) CalcPreVerificationGas(op *userop.UserOperation) (*big.Int, 
 }
 
 // CalcPreVerificationGasWithBuffer returns CalcPreVerificationGas increased by the set PVG buffer factor.
-func (ov *Overhead) CalcPreVerificationGasWithBuffer(op *userop.UserOperation) (*big.Int, error) {
+func (ov *Overhead) CalcPreVerificationGasWithBuffer(op *userop.UserOp) (*big.Int, error) {
 	pvg, err := ov.CalcPreVerificationGas(op)
 	if err != nil {
 		return nil, err

@@ -18,7 +18,7 @@ import (
 func SimulateValidation(
 	rpc *rpc.Client,
 	entryPoint common.Address,
-	op *userop.UserOperation,
+	op *userop.UserOp,
 ) (*reverts.ValidationResultRevert, error) {
 	ep, err := entrypoint.NewEntrypoint(entryPoint, ethclient.NewClient(rpc))
 	if err != nil {

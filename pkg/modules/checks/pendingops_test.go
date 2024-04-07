@@ -10,7 +10,7 @@ import (
 )
 
 func TestNoPendingOps(t *testing.T) {
-	penOps := []*userop.UserOperation{}
+	penOps := []*userop.UserOp{}
 	op := testutils.MockValidInitUserOp()
 	err := ValidatePendingOps(
 		op,
@@ -24,7 +24,7 @@ func TestNoPendingOps(t *testing.T) {
 
 func TestPendingOpsWithNewOp(t *testing.T) {
 	penOp := testutils.MockValidInitUserOp()
-	penOps := []*userop.UserOperation{penOp}
+	penOps := []*userop.UserOp{penOp}
 	op := testutils.MockValidInitUserOp()
 	op.Nonce = big.NewInt(1)
 	err := ValidatePendingOps(
@@ -39,7 +39,7 @@ func TestPendingOpsWithNewOp(t *testing.T) {
 
 func TestPendingOpsWithNoGasFeeReplacement(t *testing.T) {
 	penOp := testutils.MockValidInitUserOp()
-	penOps := []*userop.UserOperation{penOp}
+	penOps := []*userop.UserOp{penOp}
 	op := testutils.MockValidInitUserOp()
 	err := ValidatePendingOps(
 		op,
@@ -53,7 +53,7 @@ func TestPendingOpsWithNoGasFeeReplacement(t *testing.T) {
 
 func TestPendingOpsWithOnlyMaxFeeReplacement(t *testing.T) {
 	penOp := testutils.MockValidInitUserOp()
-	penOps := []*userop.UserOperation{penOp}
+	penOps := []*userop.UserOp{penOp}
 	op := testutils.MockValidInitUserOp()
 	op.MaxFeePerGas, _ = calcNewThresholds(op.MaxFeePerGas, op.MaxPriorityFeePerGas)
 	err := ValidatePendingOps(
@@ -68,7 +68,7 @@ func TestPendingOpsWithOnlyMaxFeeReplacement(t *testing.T) {
 
 func TestPendingOpsWithOnlyMaxPriorityFeeReplacement(t *testing.T) {
 	penOp := testutils.MockValidInitUserOp()
-	penOps := []*userop.UserOperation{penOp}
+	penOps := []*userop.UserOp{penOp}
 	op := testutils.MockValidInitUserOp()
 	_, op.MaxPriorityFeePerGas = calcNewThresholds(op.MaxFeePerGas, op.MaxPriorityFeePerGas)
 	err := ValidatePendingOps(
@@ -83,7 +83,7 @@ func TestPendingOpsWithOnlyMaxPriorityFeeReplacement(t *testing.T) {
 
 func TestPendingOpsWithOkGasFeeReplacement(t *testing.T) {
 	penOp := testutils.MockValidInitUserOp()
-	penOps := []*userop.UserOperation{penOp}
+	penOps := []*userop.UserOp{penOp}
 	op := testutils.MockValidInitUserOp()
 	op.MaxFeePerGas, op.MaxPriorityFeePerGas = calcNewThresholds(op.MaxFeePerGas, op.MaxPriorityFeePerGas)
 	err := ValidatePendingOps(

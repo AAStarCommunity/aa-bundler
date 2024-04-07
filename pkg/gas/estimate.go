@@ -45,7 +45,7 @@ func isExecutionReverted(err error) bool {
 type EstimateInput struct {
 	Rpc         *rpc.Client
 	EntryPoint  common.Address
-	Op          *userop.UserOperation
+	Op          *userop.UserOp
 	Sos         state.OverrideSet
 	Ov          *Overhead
 	ChainID     *big.Int
@@ -101,7 +101,7 @@ func EstimateGas(in *EstimateInput) (verificationGas uint64, callGas uint64, err
 
 	// Find the optimal verificationGasLimit with binary search. A gas price of 0 may result in certain
 	// upstream code paths in the EVM to not be executed which can affect the reliability of gas estimates. In
-	// this case, consider calling the EstimateGas function after setting the gas price on the UserOperation.
+	// this case, consider calling the EstimateGas function after setting the gas price on the UserOp.
 	l := int64(0)
 	r := in.MaxGasLimit.Int64()
 	f := in.lastVGL

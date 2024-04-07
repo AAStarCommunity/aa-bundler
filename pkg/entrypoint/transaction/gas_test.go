@@ -17,7 +17,7 @@ func TestSuggestMeanGasTipCapForNormalLoad(t *testing.T) {
 	op1.MaxPriorityFeePerGas = big.NewInt(1)
 	op2 := testutils.MockValidInitUserOp()
 	op2.MaxPriorityFeePerGas = big.NewInt(1)
-	batch := []*userop.UserOperation{op1, op2}
+	batch := []*userop.UserOp{op1, op2}
 
 	expected := big.NewInt(2)
 	if tip := SuggestMeanGasTipCap(expected, batch); tip.Cmp(expected) != 0 {
@@ -33,7 +33,7 @@ func TestSuggestMeanGasTipCapForHighLoad(t *testing.T) {
 	op1.MaxPriorityFeePerGas = big.NewInt(5)
 	op2 := testutils.MockValidInitUserOp()
 	op2.MaxPriorityFeePerGas = big.NewInt(10)
-	batch := []*userop.UserOperation{op1, op2}
+	batch := []*userop.UserOp{op1, op2}
 
 	expected := big.NewInt(7)
 	if tip := SuggestMeanGasTipCap(big.NewInt(2), batch); tip.Cmp(expected) != 0 {
@@ -49,7 +49,7 @@ func TestSuggestMeanGasFeeCapNormalLoad(t *testing.T) {
 	op1.MaxFeePerGas = big.NewInt(1)
 	op2 := testutils.MockValidInitUserOp()
 	op2.MaxFeePerGas = big.NewInt(1)
-	batch := []*userop.UserOperation{op1, op2}
+	batch := []*userop.UserOp{op1, op2}
 
 	bf := big.NewInt(1)
 	tip := big.NewInt(0)
@@ -68,7 +68,7 @@ func TestSuggestMeanGasFeeCapHighLoad(t *testing.T) {
 	op1.MaxFeePerGas = big.NewInt(5)
 	op2 := testutils.MockValidInitUserOp()
 	op2.MaxFeePerGas = big.NewInt(10)
-	batch := []*userop.UserOperation{op1, op2}
+	batch := []*userop.UserOp{op1, op2}
 
 	bf := big.NewInt(1)
 	tip := big.NewInt(0)
@@ -89,7 +89,7 @@ func TestSuggestMeanGasPriceForNormalLoad(t *testing.T) {
 	op2.MaxFeePerGas = big.NewInt(1)
 
 	expected := big.NewInt(2)
-	batch := []*userop.UserOperation{op1, op2}
+	batch := []*userop.UserOp{op1, op2}
 	gp := SuggestMeanGasPrice(expected, batch)
 	if gp.Cmp(expected) != 0 {
 		t.Fatalf("got %d, want %d", gp.Int64(), expected.Int64())
@@ -106,7 +106,7 @@ func TestSuggestMeanGasPriceForHighLoad(t *testing.T) {
 	op2.MaxFeePerGas = big.NewInt(10)
 
 	expected := big.NewInt(7)
-	batch := []*userop.UserOperation{op1, op2}
+	batch := []*userop.UserOp{op1, op2}
 	gp := SuggestMeanGasPrice(big.NewInt(2), batch)
 	if gp.Cmp(expected) != 0 {
 		t.Fatalf("got %d, want %d", gp.Int64(), expected.Int64())

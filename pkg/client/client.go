@@ -3,6 +3,7 @@ package client
 
 import (
 	"errors"
+	"github.com/stackup-wallet/stackup-bundler/internal/config"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -25,7 +26,7 @@ type Client struct {
 	mempool              *mempool.Mempool
 	ov                   *gas.Overhead
 	chainID              *big.Int
-	supportedEntryPoints []common.Address
+	supportedEntryPoints []config.AddressWithVersion
 	userOpHandler        modules.UserOpHandlerFunc
 	logger               logr.Logger
 	getUserOpReceipt     GetUserOpReceiptFunc
@@ -42,7 +43,7 @@ func New(
 	mempool *mempool.Mempool,
 	ov *gas.Overhead,
 	chainID *big.Int,
-	supportedEntryPoints []common.Address,
+	supportedEntryPoints []config.AddressWithVersion,
 	opLookupLimit uint64,
 ) *Client {
 	return &Client{
@@ -61,14 +62,14 @@ func New(
 	}
 }
 
-func (i *Client) parseEntryPointAddress(ep string) (common.Address, error) {
+func (i *Client) parseEntryPointAddress(ep string) (config.AddressWithVersion, error) {
 	for _, addr := range i.supportedEntryPoints {
-		if common.HexToAddress(ep) == addr {
+		if common.HexToAddress(ep) == addr.Address {
 			return addr, nil
 		}
 	}
 
-	return common.Address{}, errors.New("entryPoint: Implementation not supported")
+	return config.AddressWithVersion{}, errors.New("entryPoint: Implementation not supported")
 }
 
 // UseLogger defines the logger object used by the Client instance based on the go-logr/logr interface.
@@ -126,7 +127,7 @@ func (i *Client) SendUserOperation(op map[string]any, ep string) (string, error)
 		return "", err
 	}
 	l = l.
-		WithValues("entrypoint", epAddr.String()).
+		WithValues("entrypoint", epAddr.Address.String()).
 		WithValues("chain_id", i.chainID.String())
 
 	userOp, err := userop.New(op)
@@ -134,7 +135,7 @@ func (i *Client) SendUserOperation(op map[string]any, ep string) (string, error)
 		l.Error(err, "eth_sendUserOperation error")
 		return "", err
 	}
-	hash := userOp.GetUserOpHash(epAddr, i.chainID)
+	hash := userOp.GetUserOpHash(epAddr.Address, i.chainID)
 	l = l.WithValues("userop_hash", hash)
 
 	// Run through client module stack.
@@ -165,7 +166,7 @@ func (i *Client) SendUserOperation(op map[string]any, ep string) (string, error)
 }
 
 // EstimateUserOperationGas returns estimates for PreVerificationGas, VerificationGasLimit, and CallGasLimit
-// given a UserOperation, EntryPoint address, and state OverrideSet. The signature field and current gas
+// given a UserOp, EntryPoint address, and state OverrideSet. The signature field and current gas
 // values will not be validated although there should be dummy values in place for the most reliable results
 // (e.g. a signature with the correct length).
 func (i *Client) EstimateUserOperationGas(
@@ -239,7 +240,7 @@ func (i *Client) EstimateUserOperationGas(
 	}, nil
 }
 
-// GetUserOperationReceipt fetches a UserOperation receipt based on a userOpHash returned by
+// GetUserOperationReceipt fetches a UserOp receipt based on a userOpHash returned by
 // *Client.SendUserOperation.
 func (i *Client) GetUserOperationReceipt(
 	hash string,
@@ -257,7 +258,7 @@ func (i *Client) GetUserOperationReceipt(
 	return ev, nil
 }
 
-// GetUserOperationByHash returns a UserOperation based on a given userOpHash returned by
+// GetUserOperationByHash returns a UserOp based on a given userOpHash returned by
 // *Client.SendUserOperation.
 func (i *Client) GetUserOperationByHash(hash string) (*filter.HashLookupResult, error) {
 	// Init logger

@@ -21,7 +21,7 @@ import (
 type SimulateInput struct {
 	Rpc        *rpc.Client
 	EntryPoint common.Address
-	Op         *userop.UserOperation
+	Op         *userop.UserOp
 	Sos        state.OverrideSet
 	ChainID    *big.Int
 

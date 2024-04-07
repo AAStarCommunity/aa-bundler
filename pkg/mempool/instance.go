@@ -28,14 +28,14 @@ func New(db *badger.DB) (*Mempool, error) {
 }
 
 // GetOps returns all the UserOperations associated with an EntryPoint and Sender address.
-func (m *Mempool) GetOps(entryPoint common.Address, sender common.Address) ([]*userop.UserOperation, error) {
+func (m *Mempool) GetOps(entryPoint common.Address, sender common.Address) ([]*userop.UserOp, error) {
 	ops := m.queue.GetOps(entryPoint, sender)
 	return ops, nil
 }
 
-// AddOp adds a UserOperation to the mempool or replace an existing one with the same EntryPoint, Sender, and
+// AddOp adds a UserOp to the mempool or replace an existing one with the same EntryPoint, Sender, and
 // Nonce values.
-func (m *Mempool) AddOp(entryPoint common.Address, op *userop.UserOperation) error {
+func (m *Mempool) AddOp(entryPoint common.Address, op *userop.UserOp) error {
 	data, err := op.MarshalJSON()
 	if err != nil {
 		return err
@@ -53,7 +53,7 @@ func (m *Mempool) AddOp(entryPoint common.Address, op *userop.UserOperation) err
 }
 
 // RemoveOps removes a list of UserOperations from the mempool by EntryPoint, Sender, and Nonce values.
-func (m *Mempool) RemoveOps(entryPoint common.Address, ops ...*userop.UserOperation) error {
+func (m *Mempool) RemoveOps(entryPoint common.Address, ops ...*userop.UserOp) error {
 	err := m.db.Update(func(txn *badger.Txn) error {
 		for _, op := range ops {
 			err := txn.Delete(getUniqueKey(entryPoint, op.Sender, op.Nonce))
@@ -73,7 +73,7 @@ func (m *Mempool) RemoveOps(entryPoint common.Address, ops ...*userop.UserOperat
 }
 
 // Dump will return a list of UserOperations from the mempool by EntryPoint in the order it arrived.
-func (m *Mempool) Dump(entryPoint common.Address) ([]*userop.UserOperation, error) {
+func (m *Mempool) Dump(entryPoint common.Address) ([]*userop.UserOp, error) {
 	return m.queue.All(entryPoint), nil
 }
 

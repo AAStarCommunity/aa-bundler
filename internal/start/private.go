@@ -87,13 +87,13 @@ func PrivateMode() {
 	if chain.Cmp(config.ArbitrumOneChainID) == 0 ||
 		chain.Cmp(config.ArbitrumGoerliChainID) == 0 ||
 		chain.Cmp(config.ArbitrumSepoliaChainID) == 0 {
-		ov.SetCalcPreVerificationGasFunc(gas.CalcArbitrumPVGWithEthClient(rpc, conf.SupportedEntryPoints[0]))
+		ov.SetCalcPreVerificationGasFunc(gas.CalcArbitrumPVGWithEthClient(rpc, conf.SupportedEntryPoints[0])) // TODO: why use the 1st ep only?
 		ov.SetPreVerificationGasBufferFactor(16)
 	}
 
 	if conf.IsOpStackNetwork || config.OpStackChains.Contains(chain.Uint64()) {
 		ov.SetCalcPreVerificationGasFunc(
-			gas.CalcOptimismPVGWithEthClient(rpc, chain, conf.SupportedEntryPoints[0]),
+			gas.CalcOptimismPVGWithEthClient(rpc, chain, conf.SupportedEntryPoints[0]), // TODO: why use the 1st ep only?
 		)
 		ov.SetPreVerificationGasBufferFactor(1)
 	}
@@ -179,7 +179,7 @@ func PrivateMode() {
 	// init Debug
 	var d *client.Debug
 	if conf.DebugMode {
-		d = client.NewDebug(eoa, eth, mem, rep, b, chain, conf.SupportedEntryPoints[0], beneficiary)
+		d = client.NewDebug(eoa, eth, mem, rep, b, chain, conf.SupportedEntryPoints[0], beneficiary) // TODO: why use the 1st ep only?
 		b.SetMaxBatch(1)
 		relayer.SetWaitTimeout(0)
 	}

@@ -4,6 +4,8 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	useropV06 "github.com/stackup-wallet/stackup-bundler/pkg/userop/v06"
+	useropV07 "github.com/stackup-wallet/stackup-bundler/pkg/userop/v07"
 	"math/big"
 	"reflect"
 	"sync"
@@ -17,7 +19,7 @@ var (
 	validate = validator.New()
 	onlyOnce = sync.Once{}
 
-	ErrBadUserOperationData = errors.New("cannot decode UserOperation")
+	ErrBadUserOperationData = errors.New("cannot decode UserOp")
 )
 
 func exactFieldMatch(mapKey, fieldName string) bool {
@@ -87,9 +89,19 @@ func validateBigIntType(field reflect.Value) interface{} {
 	return field
 }
 
-// New decodes a map into a UserOperation object and validates all the fields are correctly typed.
-func New(data map[string]any) (*UserOperation, error) {
-	var op UserOperation
+// newByVersion automatically recognize Entrypoint UserOp Version via data
+// support 0.6 and 0.7
+func newByVersion(data map[string]any) (UserOp, error) {
+	if _, ok := data["gasFees"]; ok {
+		return &useropV07.PackedUserOperation{}, nil
+	}
+
+	return &useropV06.UserOperation{}, nil
+}
+
+// New decodes a map into a UserOp object and validates all the fields are correctly typed.
+func New(data map[string]any) (UserOp, error) {
+	op, _ := newByVersion(data)
 
 	// Convert map to struct
 	config := &mapstructure.DecoderConfig{
@@ -116,5 +128,5 @@ func New(data map[string]any) (*UserOperation, error) {
 		return nil, err
 	}
 
-	return &op, nil
+	return op, nil
 }

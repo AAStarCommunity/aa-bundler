@@ -52,6 +52,10 @@ type UserOperation struct {
 	MaxPriorityFeePerGas *big.Int       `json:"maxPriorityFeePerGas" mapstructure:"maxPriorityFeePerGas" validate:"required"`
 	PaymasterAndData     []byte         `json:"paymasterAndData"     mapstructure:"paymasterAndData"     validate:"required"`
 	Signature            []byte         `json:"signature"            mapstructure:"signature"            validate:"required"`
+
+	AccountGasLimits   [32]byte `json:"accountGasLimits"   mapstructure:"accountGasLimits"   validate:"required"`
+	PreVerificationGas *big.Int `json:"preVerificationGas" mapstructure:"preVerificationGas" validate:"required"`
+	GasFees            [32]byte `json:"gasFees"            mapstructure:"gasFees"            validate:"required"`
 }
 
 // GetPaymaster returns the address portion of PaymasterAndData if applicable. Otherwise it returns the zero

@@ -53,6 +53,26 @@ func getEntrypointUserOpSlice(tmp userop.UserOp) []interface{} {
 	return nil
 }
 
+func getL2Price(tmp userop.UserOp) *big.Int {
+	if opV06, ok := tmp.(*useropV06.UserOperation); ok {
+		return opV06.MaxFeePerGas
+	}
+	if _, ok := tmp.(*useropV07.PackedUserOperation); ok {
+		panic("0.7 is not supported")
+	}
+	return nil
+}
+
+func getL2Priority(tmp userop.UserOp) *big.Int {
+	if opV06, ok := tmp.(*useropV06.UserOperation); ok {
+		return opV06.MaxPriorityFeePerGas
+	}
+	if _, ok := tmp.(*useropV07.PackedUserOperation); ok {
+		panic("0.7 is not supported")
+	}
+	return nil
+}
+
 // CalcArbitrumPVGWithEthClient uses Arbitrum's NodeInterface precompile to get an estimate for
 // preVerificationGas that takes into account the L1 gas component. see
 // https://medium.com/offchainlabs/understanding-arbitrum-2-dimensional-fees-fd1d582596c9.
@@ -145,7 +165,7 @@ func CalcOptimismPVGWithEthClient(
 			Eth:        eth,
 			ChainID:    chainID,
 			EntryPoint: entryPoint,
-			Batch:      []*userop.UserOp{op},
+			Batch:      []*userop.UserOp{&op},
 			Beneficiary: config.AddressWithVersion{
 				Version: entryPoint.Version,
 				Address: dummy.Address,
@@ -185,8 +205,8 @@ func CalcOptimismPVGWithEthClient(
 		if err != nil {
 			return nil, err
 		}
-		l2price := op.MaxFeePerGas
-		l2priority := big.NewInt(0).Add(op.MaxPriorityFeePerGas, head.BaseFee)
+		l2price := getL2Price(op)
+		l2priority := big.NewInt(0).Add(getL2Priority(op), head.BaseFee)
 		if l2priority.Cmp(l2price) == -1 {
 			l2price = l2priority
 		}

@@ -55,7 +55,7 @@ func CalcArbitrumPVGWithEthClient(
 
 		// Pack handleOps method inputs
 		ho, err := methods.HandleOpsMethod.Inputs.Pack(
-			[]entrypoint.UserOperation{entrypoint.UserOperation(*tmp)},
+			[]entrypoint.PackedUserOperation{entrypoint.PackedUserOperation(*tmp)},
 			dummy.Address,
 		)
 		if err != nil {
